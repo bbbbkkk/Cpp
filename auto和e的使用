@@ -1,0 +1,25 @@
+#include <iostream>
+using std::cin;
+using std::cout;
+using std::endl;
+int main()
+{
+    int arr[4] = {1, 2, 3, 4};
+    auto x = 12.11;
+    cout << x << endl;
+    for (auto e : arr)
+    {
+        cout << e << " ";
+    }
+    printf("\n");
+    for (auto &e : arr)
+    {
+        e *= 2;
+    }
+    for (auto e : arr)
+    {
+        cout << e << " ";
+    }
+    printf("\n");
+    return 0;
+}
