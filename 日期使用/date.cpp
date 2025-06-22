@@ -1,11 +1,18 @@
 #include "test.h"
 void test()
 {
-      data d1(2023, 6, 23);
-    d1.Print();
-    d1 += 100;
-    d1.Print();
-    data d2(d1);
+    data d1(2023, 6, 23);
+    data d2(2023, 6, 30);
+    cin >> d1 >> d2;
+    cout << d1 << d2;
+        d1 += 100;
+        cout << d1;
+        d1 -= 100;
+        cout << d1;
+
+        cout << d2;
+
+        cout << (d1 - d2) << endl;
 }
 
 int main()
