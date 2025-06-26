@@ -1,0 +1,25 @@
+#include <iostream>
+using namespace std;
+int main()
+{
+    string url = "https://chatgpt.com/c/68477800-8964-8002-9b43-7901e03f70e1";
+    string s1;
+    auto pos1 = url.find("://");
+    if (pos1 != string::npos)
+    {
+        s1 = url.substr(0, pos1);
+        cout << s1 << endl;
+    }
+    string s2;
+    auto pos2 = url.find('/', pos1 + 3);
+    if (pos2 != string::npos)
+    {
+        s2 = url.substr(pos1 + 3, pos2 - (pos1 + 3));
+        cout << s2 << endl;
+    }
+    string s3;
+    s3 = url.substr(pos2 + 1);
+    cout << s3 << endl;
+
+    return 0;
+}
