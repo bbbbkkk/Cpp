@@ -1,0 +1,49 @@
+#include <iostream>
+using namespace std;
+int main()
+{
+    string s1;
+    s1.push_back('9');
+    s1.push_back('2');
+    s1.push_back('3');
+    s1.push_back('4');
+    s1.push_back('9');
+    s1.push_back('6');
+    s1.push_back('7');
+    s1.push_back('1');
+    s1.push_back('5');
+    string::iterator it = s1.begin();
+    while (it != s1.end())
+    {
+        cout << (*it) << " ";
+        it++;
+    }
+    cout << endl;
+    for (auto e : s1)
+    {
+        cout << e << " ";
+    }
+    cout << endl;
+    reverse(s1.begin(), s1.end());
+    for (auto e : s1)
+    {
+        cout << e << " ";
+    }
+    cout << endl;
+    string::reverse_iterator iit = s1.rbegin();
+    while (iit != s1.rend())
+    {
+        cout << (*iit) << " ";
+        iit++;
+    }
+    cout << endl;
+
+    sort(s1.begin(), s1.end());
+    for (auto e : s1)
+    {
+        cout << e << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
