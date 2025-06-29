@@ -1,0 +1,43 @@
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+using namespace std;
+class a1
+{
+public:
+    vector<vector<int>> general(int row)
+    {
+        vector<vector<int>> vv(row);
+        for (auto i = 0; i < vv.size(); i++)
+        {
+            vv[i].resize(i + 1, 0);
+            vv[i][0] = vv[i][i] = 1;
+        }
+        for (auto i = 0; i < vv.size(); i++)
+        {
+            for (auto j = 0; j < vv[i].size(); j++)
+            {
+                if (vv[i][j] == 0)
+                {
+                    vv[i][j] = vv[i - 1][j] + vv[i - 1][j - 1];
+                }
+            }
+        }
+        return vv;
+    }
+};
+int main()
+{
+    a1 tri;
+    auto arr = tri.general(6);
+    for (auto i = 0; i < arr.size(); i++)
+    {
+        for (auto j = 0; j < arr[i].size(); j++)
+        {
+            cout << arr[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+    return 0;
+}
