@@ -1,0 +1,46 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+class solution
+{
+    string a[10] = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+
+public:
+    void combine(string digits, int level, string combinestr, vector<string> &v)
+    {
+        if (level == digits.size())
+        {
+            v.push_back(combinestr);
+            return;
+        }
+        int num = digits[level] - '0';
+        string str = a[num];
+        for (size_t i = 0; i < str.size(); i++)
+        {
+            combine(digits, level + 1, combinestr + str[i], v);
+        }
+    }
+
+    vector<string> lettercombination(string digits)
+    {
+        vector<string> v;
+        if (digits.empty())
+        {
+            return v;
+        }
+        combine(digits, 0, "", v);
+        return v;
+    }
+};
+int main()
+{
+    solution s1;
+    vector<string> arr = s1.lettercombination("34");
+    for (auto e : arr)
+    {
+        cout << e << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
