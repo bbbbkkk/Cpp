@@ -1,26 +1,24 @@
 #include <iostream>
 #include <stack>
 using namespace std;
-class ministack
+class minstack
 {
 public:
-    // 构造函数
-    ministack() {};
-    // 析构函数
-    ~ministack() {};
+    minstack() {}
+    ~minstack() {}
     void push(int val)
     {
         _st.push(val);
-        if (_minst.empty() || val <= _minst.top())
+        if (_minist.empty() || val <= _minist.top())
         {
-            _minst.push(val);
+            _minist.push(val);
         }
     }
     void pop()
     {
-        if (!_st.empty() && _st.top() == _minst.top())
+        if (!_st.empty() && _minist.top() == _st.top())
         {
-            _minst.pop();
+            _minist.pop();
         }
         if (!_st.empty())
         {
@@ -31,29 +29,45 @@ public:
     {
         return _st.top();
     }
-    int getmin()
+    int getmini()
     {
-        return _minst.top();
+        return _minist.top();
+    }
+    bool isempty_minstack()
+    {
+        return _st.empty();
+    }
+    friend ostream &operator<<(ostream &out, const minstack &ms)
+    {
+        stack<int> tem = ms._st;
+        while (!tem.empty())
+        {
+            cout << tem.top() << " ";
+            tem.pop();
+        }
+        return out;
     }
 
 private:
     stack<int> _st;
-    stack<int> _minst;
+    stack<int> _minist;
 };
 int main()
 {
-    ministack m1;
-    m1.push(10);
-    m1.push(2);
-    m1.push(3);
+    minstack m1;
     m1.push(4);
-    m1.push(5);
-    m1.push(6);
-    cout << m1.getmin() << endl;
+    m1.push(2);
+    m1.push(2);
+    m1.push(9);
+    m1.push(7);
     m1.push(1);
-    cout << m1.getmin() << endl;
+    cout << m1;
+    cout << endl;
     m1.pop();
-    cout << m1.getmin() << endl;
+    cout << m1;
+    cout << endl;
+
+    cout << m1.getmini() << endl;
 
     return 0;
 }
