@@ -1,0 +1,59 @@
+#include <iostream>
+#include <stack>
+using namespace std;
+class ministack
+{
+public:
+    // 构造函数
+    ministack() {};
+    // 析构函数
+    ~ministack() {};
+    void push(int val)
+    {
+        _st.push(val);
+        if (_minst.empty() || val <= _minst.top())
+        {
+            _minst.push(val);
+        }
+    }
+    void pop()
+    {
+        if (!_st.empty() && _st.top() == _minst.top())
+        {
+            _minst.pop();
+        }
+        if (!_st.empty())
+        {
+            _st.pop();
+        }
+    }
+    int top()
+    {
+        return _st.top();
+    }
+    int getmin()
+    {
+        return _minst.top();
+    }
+
+private:
+    stack<int> _st;
+    stack<int> _minst;
+};
+int main()
+{
+    ministack m1;
+    m1.push(10);
+    m1.push(2);
+    m1.push(3);
+    m1.push(4);
+    m1.push(5);
+    m1.push(6);
+    cout << m1.getmin() << endl;
+    m1.push(1);
+    cout << m1.getmin() << endl;
+    m1.pop();
+    cout << m1.getmin() << endl;
+
+    return 0;
+}
