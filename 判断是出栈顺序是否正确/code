@@ -1,0 +1,72 @@
+#include <iostream>
+#include <stack>
+#include <stdbool.h>
+#include <vector>
+using namespace std;
+bool isorder(vector<int> push, vector<int> pop)
+{
+    stack<int> _st;
+    size_t pushi = 0;
+    int popi = 0;
+    while (pushi < push.size())
+    {
+        _st.push(push[pushi++]);
+        while (!_st.empty() && _st.top() == pop[popi])
+        {
+            _st.pop();
+            popi++;
+        }
+    }
+    return _st.empty();
+}
+ostream &operator<<(ostream &out, const stack<int> &ms)
+{
+    stack<int> tem = ms;
+    while (!tem.empty())
+    {
+        out << tem.top() << " ";
+        tem.pop();
+    }
+    return out;
+}
+
+int main()
+{
+    stack<int> s1;
+    s1.push(1);
+    s1.push(4);
+    s1.push(3);
+    s1.push(5);
+    s1.push(2);
+    s1.push(10);
+    cout << s1;
+    cout << endl;
+    vector<int> push1;
+    push1.push_back(10);
+    push1.push_back(2);
+    push1.push_back(5);
+    push1.push_back(3);
+    push1.push_back(4);
+    push1.push_back(1);
+    for (auto e : push1)
+    {
+        cout << e << " ";
+    }
+    cout << endl;
+    vector<int> pop1;
+
+    pop1.push_back(1);
+    pop1.push_back(3);
+    pop1.push_back(4);
+    pop1.push_back(5);
+    pop1.push_back(4);
+    pop1.push_back(10);
+    for (auto e : pop1)
+    {
+        cout << e << " ";
+    }
+    cout << endl;
+    cout << isorder(push1, pop1) << endl;
+
+    return 0;
+}
