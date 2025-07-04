@@ -1,0 +1,55 @@
+#include <iostream>
+#include <stack>
+#include <vector>
+using namespace std;
+class solution
+{
+public:
+    int eval(vector<string> &tokens)
+    {
+        stack<int> st;
+        for (auto str : tokens)
+        {
+            if (str == "+" || str == "-" || str == "*" || str == "/")
+            {
+                int left = st.top();
+                st.pop();
+                int right = st.top();
+                st.pop();
+                switch (str[0])
+                {
+                case '+':
+                    st.push(left + right);
+                    break;
+                case '-':
+                    st.push(left - right);
+                    break;
+                case '*':
+                    st.push(left * right);
+                    break;
+                case '/':
+                    st.push(left / right);
+                    break;
+                }
+            }
+            else
+            {
+                st.push(stoi(str));
+            }
+        }
+        return st.top();
+    }
+};
+int main()
+{
+    vector<string> v1;
+    v1.push_back("2");
+    v1.push_back("1");
+    v1.push_back("5");
+    v1.push_back("*");
+    v1.push_back("+");
+    solution s1;
+    int num = s1.eval(v1);
+    cout << num << endl;
+    return 0;
+}
