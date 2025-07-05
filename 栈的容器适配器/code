@@ -2,7 +2,7 @@
 #include <iostream>
 #include <list>
 using namespace std;
-
+//记得第二参数也要定类型 ：deque<T>
 template <class T, class container = deque<T>>
 class stack
 {
