@@ -1,0 +1,39 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+class a
+{
+public:
+    int top_k(vector<int> v1, int k)
+    {
+        // 小堆
+        priority_queue<int, vector<int>, greater<int>> pq(v1.begin(), v1.begin() + k);
+        for (size_t i = k; i < v1.size(); i++)
+        {
+            if (v1[i] > pq.top())
+            {
+                pq.pop();
+                pq.push(v1[i]);
+            }
+        }
+        return pq.top();
+    }
+};
+int main()
+{
+    a a1;
+    vector<int> v2;
+    v2.push_back(21);
+    v2.push_back(11);
+    v2.push_back(88);
+    v2.push_back(23);
+    v2.push_back(2);
+    v2.push_back(55);
+    v2.push_back(99);
+    v2.push_back(28);
+    v2.push_back(1);
+    int topk_num = a1.top_k(v2, 2);
+    cout << topk_num << endl;
+    return 0;
+}
