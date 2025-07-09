@@ -1,0 +1,120 @@
+#include <iostream>
+using namespace std;
+class person
+{
+public:
+    // 构造函数
+    person(const string &name = "peter", const int &age = 20)
+        : _name(name),
+          _age(age)
+    {
+        cout << "person()" << endl;
+        ++_count;
+    }
+    // 拷贝构造函数
+    person(const person &p)
+        : _name(p._name),
+          _age(p._age)
+    {
+        cout << "person(const person &p)" << endl;
+    }
+    //=运算符重载
+    person &operator=(const person &p)
+    {
+        if (this != &p)
+        {
+            _name = p._name;
+            _age = p._age;
+            cout << "operator=" << endl;
+        }
+        return *this;
+    }
+
+    // protected:
+    string _name;
+    int _age;
+    static int height;
+    static int _count;
+};
+int person::height = 175;
+int person::_count = 0;
+
+class student : public person
+{
+public:
+    // 构造函数
+    student(const string &name = "zhangsan", const int &age = 18, const string &sex = "male", const int &tel = 111)
+        : person(name, age),
+          _sex(sex),
+          _tel(tel)
+
+    {
+        cout << "student()" << endl;
+    }
+    // 拷贝构造函数
+    student(const student &s)
+        : person(s),
+          _tel(s._tel)
+    {
+        cout << "student(const student &s)" << endl;
+    }
+    //=运算符重载
+    student &operator=(const student &s)
+    {
+        if (this != &s)
+        {
+            // 这里不写person::会先调用student的operator=
+            person::operator=(s);
+            _sex = s._sex;
+            _tel = s._tel;
+        }
+        return *this;
+    }
+
+    // protected:
+    string _sex;
+    int _tel;
+};
+
+class worker : virtual public person
+{
+public:
+    int _num;
+    string _key;
+};
+class boss : virtual public person
+{
+public:
+    int _id;
+    int _salary;
+};
+class total : public worker, public boss
+{
+public:
+    string _totalsalary;
+};
+int main()
+{
+    person p1;
+    student s1;
+    student s2;
+    student s3;
+    student s4;
+    p1 = s1;
+    cout << person::_count << endl;
+    cout << s1._age << endl;
+    cout << s1._sex << endl;
+    cout << person::height << endl;
+    cout << student::height << endl;
+
+    total t1;
+    t1.worker::_age = 100;
+    t1.boss::_age = 111;
+    // 不加virtual输出结果是100
+    cout << t1.worker::_age << endl;
+    // 不加virtual输出结果是111
+    // 加了virtual 是111
+    cout << t1.boss::_age << endl;
+
+    return 0;
+}
