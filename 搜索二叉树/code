@@ -1,0 +1,232 @@
+#include <iostream>
+#include <stdbool.h>
+using namespace std;
+template <typename K>
+class binarytreenode
+{
+public:
+    binarytreenode(const K &key)
+        : _left(nullptr),
+          _right(nullptr),
+          _key(key)
+    {
+    }
+
+public:
+    binarytreenode<K> *_left;
+    binarytreenode<K> *_right;
+    K _key;
+};
+template <typename K>
+class bstree
+{
+    typedef binarytreenode<K> node;
+
+public:
+    bstree()
+        : _root(nullptr)
+    {
+    }
+
+private:
+    node *_root;
+
+public:
+    bool Insert(const K &key)
+    {
+        // 根节点为空
+        if (_root == nullptr)
+        {
+            _root = new node(key);
+            return true;
+        }
+        // 根节点非空
+        node *parent = nullptr;
+        node *cur = _root;
+        // 找到插入位置
+        while (cur)
+        {
+            if (cur->_key < key)
+            {
+                parent = cur;
+                cur = cur->_right;
+            }
+            else if (cur->_key > key)
+            {
+                parent = cur;
+                cur = cur->_left;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        // 此时已经找到，开始插入
+        cur = new node(key);
+        if (parent->_key > key)
+        {
+            parent->_left = cur;
+            return true;
+        }
+        else
+        {
+            parent->_right = cur;
+            return true;
+        }
+    }
+    void Inorder()
+    {
+        _Inorder(_root);
+        cout << endl;
+    }
+    void _Inorder(node *root)
+    {
+        if (root == nullptr)
+        {
+            return;
+        }
+        _Inorder(root->_left);
+        cout << root->_key << " ";
+        _Inorder(root->_right);
+    }
+    bool Find(const K &key)
+    {
+        if (_root == nullptr)
+        {
+            return false;
+        }
+        node *parent = nullptr;
+        node *cur = _root;
+        while (cur)
+        {
+            if (cur->_key < key)
+            {
+                parent = cur;
+                cur = cur->_right;
+            }
+            else if (cur->_key > key)
+            {
+                parent = cur;
+                cur = cur->_left;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    bool erase(const K &key)
+    {
+        node *parent = nullptr;
+        node *cur = _root;
+        while (cur)
+        {
+            if (cur->_key < key)
+            {
+                parent = cur;
+                cur = cur->_right;
+            }
+            else if (cur->_key > key)
+            {
+                parent = cur;
+                cur = cur->_left;
+            }
+            // 找到删除位置
+            // 分情况：1.没有孩子2.一个孩子3.两个孩子
+            else
+            {
+                // 2.一个孩子(左边)
+                if (cur->_right == nullptr)
+                {
+                    // cur是根节点的情况和不是根节点的情况
+                    if (cur == _root)
+                    {
+                        _root = cur->_left;
+                    }
+                    // cur不是根节点的情况
+                    else
+                    {
+                        if (parent->_right == cur)
+                        {
+                            parent->_right = cur->_left;
+                        }
+                        else
+                        {
+                            parent->_left = cur->_left;
+                        }
+                    }
+                }
+                // 2.一个孩子（右边）
+                else if (cur->_left == nullptr)
+                {
+                    if (_root == cur)
+                    {
+                        _root = cur->_right;
+                    }
+                    else
+                    {
+                        if (parent->_right == cur)
+                        {
+                            parent->_right = cur->_right;
+                        }
+                        else
+                        {
+                            parent->_left = cur->_left;
+                        }
+                    }
+                }
+                // 找到的节点有两个孩子 3.两个孩子
+                else
+                {
+                    node *parent = cur;
+                    node *leftmax = cur->_left;
+                    while (leftmax->_right)
+                    {
+                        parent = leftmax;
+                        leftmax = leftmax->_right;
+                    }
+                    // 交换
+                    swap(leftmax->_key, cur->_key);
+                    if (parent->_left == leftmax)
+                    {
+                        parent->_left = leftmax->_left;
+                    }
+                    else
+                    {
+                        parent->_right = leftmax->_left;
+                    }
+                    cur = leftmax;
+                }
+                delete cur;
+                return true;
+            }
+        }
+        return false;
+    }
+};
+void test1()
+{
+    bstree<int> b1;
+    b1.Insert(1);
+    b1.Insert(3);
+    b1.Insert(5);
+    b1.Insert(2);
+    b1.Insert(8);
+    b1.Insert(9);
+    b1.Insert(11);
+    b1.Insert(4);
+    b1.Insert(21);
+    b1.Inorder();
+    cout << b1.Find(1) << endl;
+    cout << b1.Find(4) << endl;
+    cout << b1.Find(100) << endl;
+    b1.erase(2);
+    b1.Inorder();
+}
+
+int main()
+{
+    test1();
+    return 0;
+}
