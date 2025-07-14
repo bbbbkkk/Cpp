@@ -1,0 +1,203 @@
+#include <iostream>
+using namespace std;
+template <typename k>
+class binarynode
+{
+public:
+    binarynode(const k &key)
+        : _right(nullptr),
+          _left(nullptr),
+          _key(key)
+    {
+    }
+
+public:
+    binarynode<k> *_right;
+    binarynode<k> *_left;
+    k _key;
+};
+template <typename k>
+class bstree
+{
+    typedef binarynode<k> node;
+
+public:
+    bstree()
+        : _root(nullptr)
+    {
+    }
+
+public:
+    node *_root;
+
+public:
+    bool Insert(const k &key)
+    {
+        return _Insert(_root, key);
+    }
+    void Inoder(node *root)
+    {
+        _Inoder(root);
+        cout << endl;
+    }
+    void Inoder()
+    {
+        _Inoder(_root);
+        cout << endl;
+    }
+    bool find(const k &key)
+    {
+        return _find(_root, key);
+    }
+    bool erase(const k &key)
+    {
+        return _erase(_root, key);
+    }
+    node *Copy()
+    {
+        return _Copy(_root);
+    }
+    void Destory()
+    {
+        _Destory(_root);
+    }
+
+private:
+    bool _Insert(node *&root, const k &key)
+    {
+        if (root == nullptr)
+        {
+            root = new node(key);
+            return true;
+        }
+        if (root->_key < key)
+        {
+            return _Insert(root->_right, key);
+        }
+        else if (root->_key > key)
+        {
+            return _Insert(root->_left, key);
+        }
+        else
+        {
+            return false;
+        }
+    }
+    void _Inoder(node *root)
+    {
+        if (root == nullptr)
+        {
+            return;
+        }
+        _Inoder(root->_left);
+        cout << root->_key << " ";
+        _Inoder(root->_right);
+    }
+
+    bool _find(const node *root, const k &key)
+    {
+        if (root == nullptr)
+        {
+            return false;
+        }
+        if (root->_key < key)
+        {
+            return _find(root->_right, key);
+        }
+        else if (root->_key > key)
+        {
+            return _find(root->_left, key);
+        }
+        else
+        {
+            return true;
+        }
+    }
+    bool _erase(node *&root, const k &key)
+    {
+        if (root == nullptr)
+        {
+            return false;
+        }
+        if (root->_key < key)
+        {
+            return _erase(root->_right, key);
+        }
+        else if (root->_key > key)
+        {
+            return _erase(root->_left, key);
+        }
+        else
+        {
+            node *del = root;
+            if (root->_left == nullptr)
+            {
+                root = root->_right;
+            }
+            else if (root->_right == nullptr)
+            {
+                root = root->_left;
+            }
+            else
+            {
+                node *leftmax = root->_left;
+                while (leftmax->_right)
+                {
+                    leftmax = leftmax->_right;
+                }
+                swap(leftmax->_key, root->_key);
+                return _erase(root->_left, key);
+            }
+            delete del;
+            return true;
+        }
+    }
+    node *_Copy(node *root)
+    {
+        if (root == nullptr)
+        {
+            return nullptr;
+        }
+        node *copybstree = new node(root->_key);
+        copybstree->_right = _Copy(root->_right);
+        copybstree->_left = _Copy(root->_left);
+        return copybstree;
+    }
+    void _Destory(node *&root)
+    {
+        if (root == nullptr)
+        {
+            return;
+        }
+        _Destory(root->_left);
+        _Destory(root->_right);
+        delete root;
+        root = nullptr;
+    }
+};
+void test1()
+{
+    bstree<int> b1;
+    // bstree<int> b2;
+    b1.Insert(1);
+    b1.Insert(2);
+    b1.Insert(4);
+    b1.Insert(7);
+    b1.Insert(8);
+    b1.Insert(9);
+    b1.Inoder();
+    cout << b1.find(4) << endl;
+    cout << b1.find(5) << endl;
+    cout << b1.find(7) << endl;
+    b1.erase(2);
+    b1.Inoder();
+    auto copyroot = b1.Copy();
+    b1.Inoder(copyroot);
+    b1.Destory();
+    b1.Inoder();
+}
+int main()
+{
+    test1();
+    return 0;
+}
