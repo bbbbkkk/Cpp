@@ -1,0 +1,65 @@
+#include <iostream>
+#include <set>
+#include <vector>
+using namespace std;
+vector<int> intersection(vector<int> &num1, vector<int> &num2)
+{
+    vector<int> v;
+    set<int> m1(num1.begin(), num1.end());
+    set<int> m2(num2.begin(), num2.end());
+    auto pos1 = m1.begin();
+    auto pos2 = m2.begin();
+    while (pos1 != m1.end() && pos2 != m2.end())
+    {
+        if (*pos1 < *pos2)
+        {
+            pos1++;
+        }
+        else if (*pos1 > *pos2)
+        {
+            pos2++;
+        }
+        else
+        {
+            v.push_back(*pos1);
+            pos1++;
+            pos2++;
+        }
+    }
+    return v;
+}
+void test1()
+{
+    vector<int> v1;
+    v1.push_back(1);
+    v1.push_back(4);
+    v1.push_back(5);
+    v1.push_back(7);
+    v1.push_back(9);
+    for (auto e : v1)
+    {
+        cout << e << " ";
+    }
+    cout << endl;
+    vector<int> v2;
+    v2.push_back(2);
+    v2.push_back(4);
+    v2.push_back(7);
+    v2.push_back(10);
+    for (auto e : v2)
+    {
+        cout << e << " ";
+    }
+    cout << endl;
+    vector<int> ret = intersection(v1, v2);
+    for (auto e : ret)
+    {
+        cout << e << " ";
+    }
+    cout << endl;
+}
+int main()
+{
+    test1();
+    return 0;
+}
