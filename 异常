@@ -1,0 +1,46 @@
+#include <iostream>
+using namespace std;
+class test
+{
+public:
+    void test1(int a)
+    {
+        if (a % 100 != 0)
+        {
+            throw "fail!";
+        }
+        else
+        {
+            cout << "pass" << endl;
+        }
+    }
+
+public:
+    int a = 0;
+};
+int main()
+{
+    int b = 5;
+    while (b > 0)
+    {
+        try
+        {
+            test t1;
+            int i = 0;
+            cin >> i;
+            t1.test1(i);
+        }
+
+        catch (const char *e)
+        {
+            cout << e << '\n';
+            throw e;
+        }
+        catch (...)
+        {
+            cout << "unkown error" << endl;
+        }
+        b--;
+    }
+    return 0;
+}
