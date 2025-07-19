@@ -1,0 +1,296 @@
+#include <assert.h>
+#include <iostream>
+#include <stdbool.h>
+using namespace std;
+template <typename k, typename v>
+class AVLtreenode
+{
+public:
+    AVLtreenode(const pair<k, v> &kv)
+        : _left(nullptr),
+          _right(nullptr),
+          _parent(nullptr),
+          _kv(kv),
+          _bf(0)
+    {
+    }
+
+public:
+    AVLtreenode<k, v> *_left;
+    AVLtreenode<k, v> *_right;
+    AVLtreenode<k, v> *_parent;
+    pair<k, v> _kv;
+    int _bf;
+};
+template <typename k, typename v>
+class AVLtree
+{
+    typedef AVLtreenode<k, v> node;
+
+public:
+    AVLtree()
+        : _root(nullptr)
+    {
+    }
+
+    bool Insert(const pair<k, v> &kv)
+    {
+        if (_root == nullptr)
+        {
+            _root = new node(kv);
+            return true;
+        }
+        node *parent = nullptr;
+        node *cur = _root;
+        while (cur)
+        {
+            if (cur->_kv.first < kv.first)
+            {
+                parent = cur;
+                cur = cur->_right;
+            }
+            else if (cur->_kv.first > kv.first)
+            {
+                parent = cur;
+                cur = cur->_left;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        // 找到位置
+        cur = new node(kv);
+        if (parent->_kv.first < kv.first)
+        {
+            parent->_right = cur;
+        }
+        else
+        {
+            parent->_left = cur;
+        }
+        cur->_parent = parent;
+        while (parent)
+        {
+            if (parent->_left == cur)
+            {
+                parent->_bf--;
+            }
+            else
+            {
+                parent->_bf++;
+            }
+            if (parent->_bf == 0)
+            {
+                break;
+            }
+            else if (abs(parent->_bf) == 1)
+            {
+                cur = parent;
+                parent = parent->_parent;
+            }
+            else if (abs(parent->_bf) == 2)
+            {
+                // 旋转
+                if (parent->_bf == 2 && cur->_bf == 1)
+                {
+                    // 实现右旋
+                    rotateL(parent);
+                }
+                else if (parent->_bf == -2 && cur->_bf == -1)
+                {
+                    // 实现左旋
+                    rotateR(parent);
+                }
+                else if (parent->_bf == 2 && cur->_bf == -1)
+                {
+                    // 实现左右旋
+                    rotateRL(parent);
+                }
+                else if (parent->_bf == -2 && cur->_bf == 1)
+                {
+                    // 实现右左旋
+                    rotateLR(parent);
+                }
+                cur = parent;
+                parent = parent->_parent;
+            }
+        }
+        return true;
+    }
+
+    void rotateL(node *parent)
+    {
+        node *cur = parent->_right;
+        assert(cur);
+        node *curleft = cur->_left;
+        // 向下链接
+        parent->_right = curleft;
+        node *ppnode = parent->_parent;
+        cur->_left = parent;
+        // 向上链接
+        if (curleft)
+        {
+            curleft->_parent = parent;
+        }
+        parent->_parent = cur;
+        if (parent == _root)
+        {
+            _root = cur;
+            cur->_parent = nullptr;
+        }
+        else
+        {
+            assert(ppnode);
+            if (ppnode->_left == parent)
+            {
+                ppnode->_left = cur;
+            }
+            else
+            {
+                ppnode->_right = cur;
+            }
+            cur->_parent = ppnode;
+        }
+        parent->_bf = cur->_bf = 0;
+    }
+
+    void rotateR(node *parent)
+    {
+        node *cur = parent->_left;
+        assert(cur);
+        node *curright = cur->_right;
+        // 向下链接
+        parent->_left = curright;
+        node *ppnode = parent->_parent;
+        cur->_right = parent;
+        // 向上链接
+        if (curright)
+        {
+            curright->_parent = parent;
+        }
+        parent->_parent = cur;
+        if (parent == _root)
+        {
+            _root = cur;
+            cur->_parent = nullptr;
+        }
+        else
+        {
+            assert(ppnode);
+            if (ppnode->_left == parent)
+            {
+                ppnode->_left = cur;
+            }
+            else
+            {
+                ppnode->_right = cur;
+            }
+            cur->_parent = ppnode;
+        }
+        parent->_bf = cur->_bf = 0;
+    }
+
+    void rotateRL(node *parent)
+    {
+        node *cur = parent->_right;
+        assert(cur);
+        node *curleft = cur->_left;
+        assert(curleft);
+        rotateR(parent->_right);
+        rotateL(parent);
+        int bf = curleft->_bf;
+        if (bf == 0)
+        {
+            cur->_bf = 0;
+            curleft->_bf = 0;
+            parent->_bf = 0;
+        }
+        else if (bf == 1)
+        {
+            cur->_bf = 0;
+            curleft->_bf = 0;
+            parent->_bf = -1;
+        }
+        else if (bf == -1)
+        {
+            cur->_bf = 1;
+            curleft->_bf = 0;
+            parent->_bf = 0;
+        }
+        else
+        {
+            assert(false);
+        }
+    }
+
+    void rotateLR(node *parent)
+    {
+        node *cur = parent->_left;
+        assert(cur);
+        node *curright = cur->_right;
+        assert(curright);
+        rotateL(parent->_left);
+        rotateR(parent);
+        int bf = curright->_bf;
+        if (bf == 0)
+        {
+            cur->_bf = 0;
+            curright->_bf = 0;
+            parent->_bf = 0;
+        }
+        else if (bf == 1)
+        {
+            cur->_bf = -1;
+            curright->_bf = 0;
+            parent->_bf = 0;
+        }
+        else if (bf == -1)
+        {
+            cur->_bf = 0;
+            curright->_bf = 0;
+            parent->_bf = 1;
+        }
+        else
+        {
+            assert(false);
+        }
+    }
+
+    void Inorder()
+    {
+        _Inorder(_root);
+        cout << endl;
+    }
+
+private:
+    node *_root;
+    void _Inorder(node *&root)
+    {
+        if (root == nullptr)
+        {
+            return;
+        }
+        _Inorder(root->_left);
+        cout << root->_kv.first << ":" << root->_kv.second << " ";
+        _Inorder(root->_right);
+    }
+};
+void test1()
+{
+    AVLtree<int, int> a1;
+    a1.Insert(make_pair(5, 5));
+    a1.Insert(make_pair(3, 3));
+    a1.Insert(make_pair(1, 1));
+    a1.Insert(make_pair(4, 4));
+    a1.Insert(make_pair(7, 7));
+    a1.Insert(make_pair(6, 6));
+    a1.Insert(make_pair(8, 8));
+    a1.Inorder();
+}
+
+int main()
+{
+    test1();
+    return 0;
+}
