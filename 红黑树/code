@@ -1,0 +1,307 @@
+#include <assert.h>
+#include <iostream>
+using namespace std;
+enum color
+{
+    red,
+    black
+};
+template <typename k, typename v>
+class rbtreenode
+{
+public:
+    rbtreenode(const pair<k, v> &kv)
+        : _left(nullptr), _right(nullptr), _parent(nullptr), _kv(kv), _color(red)
+    {
+    }
+
+public:
+    rbtreenode<k, v> *_left;
+    rbtreenode<k, v> *_right;
+    rbtreenode<k, v> *_parent;
+    pair<k, v> _kv;
+    color _color;
+};
+template <typename k, typename v>
+class rbtree
+{
+    typedef rbtreenode<k, v> node;
+
+public:
+    rbtree()
+        : _root(nullptr)
+    {
+    }
+    bool Insert(const pair<k, v> &kv)
+    {
+        if (_root == nullptr)
+        {
+            _root = new node(kv);
+            _root->_color = black;
+            return true;
+        }
+        node *cur = _root;
+        node *parent = nullptr;
+        while (cur)
+        {
+            if (cur->_kv.first < kv.first)
+            {
+                parent = cur;
+                cur = cur->_right;
+            }
+            else if (cur->_kv.first > kv.first)
+            {
+                parent = cur;
+                cur = cur->_left;
+            }
+            else
+            {
+                return false;
+            }
+            // 找到插入位置
+        }
+        cur = new node(kv);
+        cur->_color = red;
+        if (parent->_kv.first < cur->_kv.first)
+        {
+            parent->_right = cur;
+        }
+        else
+        {
+            parent->_left = cur;
+        }
+        cur->_parent = parent;
+        while (parent && parent->_color == red)
+        {
+            node *grandfather = parent->_parent;
+            if (grandfather && grandfather->_left == parent)
+            {
+                node *uncle = grandfather->_right;
+                if (uncle && uncle->_color == red)
+                {
+                    parent->_color = black;
+                    uncle->_color = black;
+                    grandfather->_color = red;
+                    cur = grandfather;
+                    parent = cur->_parent;
+                }
+                else // uncle不存在
+                {
+                    if (cur == parent->_left)
+                    // 右旋
+                    //.     g
+                    //.   p
+                    //. c
+                    {
+                        rotateR(grandfather);
+                        parent->_color = black;
+                        grandfather->_color = red;
+                    }
+                    else
+                    // 双旋左+右旋
+                    //.     g
+                    //.   p
+                    //.      c
+                    // 先对p进行左旋，在对g右旋
+                    {
+                        rotateL(parent);
+                        rotateR(grandfather);
+                        cur->_color = black;
+                        grandfather->_color = red;
+                    }
+                    // 这里break 是退出本次while循环
+                    break;
+                }
+            }
+            else // grandfather && grandfather->_right == parent
+            {
+                node *uncle = grandfather->_left;
+                if (uncle && uncle->_color == red)
+                {
+                    parent->_color = black;
+                    uncle->_color = black;
+                    grandfather->_color = red;
+                    cur = grandfather;
+                    parent = cur->_parent;
+                }
+                else // uncle 不存在
+                {
+                    if (cur == parent->_left)
+                    // 双旋 对p右旋，再对g左旋
+                    //.     g
+                    //.        p
+                    //.     c
+                    {
+                        rotateR(parent);
+                        rotateL(grandfather);
+                        cur->_color = black;
+                        grandfather->_color = red;
+                    }
+                    else // cur == parent->_right
+                    // 左旋g
+                    //.     g
+                    //.        p
+                    //.           c
+                    {
+                        rotateL(grandfather);
+                        parent->_color = black;
+                        grandfather->_color = red;
+                    }
+                    break;
+                }
+            }
+        }
+        _root->_color = black;
+        return true;
+    }
+
+    void Inorder()
+    {
+        _Inorder(_root);
+        cout << endl;
+    }
+
+    bool check_rbtree()
+    {
+        int benchmark = 0;
+        int blacknum = 0;
+        node *cur = _root;
+        while (cur)
+        {
+            if (cur->_color == black)
+            {
+                benchmark++;
+            }
+            cur = cur->_left;
+        }
+        return _check_rbtree(_root, blacknum, benchmark);
+    }
+
+private:
+    node *_root;
+
+private:
+    void rotateR(node *parent)
+    {
+        node *cur = parent->_left;
+        assert(cur);
+        node *curright = cur->_right;
+        // 向下链接
+        parent->_left = curright;
+        node *ppnode = parent->_parent;
+        cur->_right = parent;
+        // 向上链接
+        if (curright)
+        {
+            curright->_parent = parent;
+        }
+        parent->_parent = cur;
+        if (parent == _root)
+        {
+            _root = cur;
+            cur->_parent = nullptr;
+        }
+        else
+        {
+            assert(ppnode);
+            if (ppnode->_left == parent)
+            {
+                ppnode->_left = cur;
+            }
+            else
+            {
+                ppnode->_right = cur;
+            }
+            cur->_parent = ppnode;
+        }
+    }
+
+    void rotateL(node *parent)
+    {
+        node *cur = parent->_right;
+        assert(cur);
+        node *curleft = cur->_left;
+        // 向下链接
+        parent->_right = curleft;
+        node *ppnode = parent->_parent;
+        cur->_left = parent;
+        // 向上链接
+        if (curleft)
+        {
+            curleft->_parent = parent;
+        }
+        parent->_parent = cur;
+        if (parent == _root)
+        {
+            _root = cur;
+            cur->_parent = nullptr;
+        }
+        else
+        {
+            assert(ppnode);
+            if (ppnode->_left == parent)
+            {
+                ppnode->_left = cur;
+            }
+            else
+            {
+                ppnode->_right = cur;
+            }
+            cur->_parent = ppnode;
+        }
+    }
+
+    void _Inorder(node *&root)
+    {
+        if (root == nullptr)
+        {
+            return;
+        }
+        _Inorder(root->_left);
+        cout << root->_kv.first << ":" << root->_kv.second << " ";
+        _Inorder(root->_right);
+    }
+
+    bool _check_rbtree(node *root, int blacknum, int benchmark)
+    {
+        if (root == nullptr)
+        {
+            if (blacknum != benchmark)
+            {
+                cout << "false" << endl;
+                return false;
+            }
+            return true;
+        }
+        if (root->_color == black)
+        {
+            blacknum++;
+        }
+        if (root->_color == red && root->_parent && root->_parent->_color == red)
+        {
+            cout << "bstree error" << ":" << root->_kv.first << endl;
+            return false;
+        }
+        return _check_rbtree(root->_left, blacknum, benchmark) && _check_rbtree(root->_right, blacknum, benchmark);
+    }
+};
+
+void test1()
+{
+    rbtree<int, int> rb1;
+    rb1.Insert(make_pair(1, 1));
+    rb1.Insert(make_pair(3, 3));
+    rb1.Insert(make_pair(6, 6));
+    rb1.Insert(make_pair(100, 100));
+    rb1.Insert(make_pair(21, 21));
+    // rb1.Insert(make_pair(4, 4));
+    cout << "successful" << endl
+         << "print..." << endl;
+    rb1.Inorder();
+    cout << rb1.check_rbtree() << endl;
+}
+int main()
+{
+    test1();
+    return 0;
+}
