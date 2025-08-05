@@ -1,0 +1,86 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+namespace bit
+{
+    template <size_t N>
+    class bitset
+    {
+    public:
+        bitset()
+        {
+            _a.resize(N / 32 + 1);
+        }
+        void set(size_t x)
+        {
+            size_t i = x / 32;
+            size_t j = x % 32;
+            _a[i] |= (1 << j);
+        }
+        void reset(size_t x)
+        {
+            size_t i = x / 32;
+            size_t j = x % 32;
+            _a[i] &= (~(1 << j));
+        }
+        bool test(size_t x)
+        {
+            size_t i = x / 32;
+            size_t j = x % 32;
+            return _a[i] & (1 << j);
+        }
+
+    private:
+        vector<int> _a;
+    };
+};
+namespace samebit
+{
+    using bit::bitset;
+    template <size_t N>
+    class thesamebit
+    {
+    public:
+        thesamebit(const bitset<N> &b1, const bitset<N> &b2)
+            : _bs1(b1),
+              _bs2(b2)
+        {
+        }
+        bool is_once(size_t x)
+        {
+            return _bs1.test(x) && _bs2.test(x);
+        }
+
+    private:
+        bitset<N> _bs1;
+        bitset<N> _bs2;
+    };
+};
+void test1()
+{
+    int arr1[] = {1, 5, 46, 8, 9, 2, 35, 2, 1, 7, 2, 4};
+    int arr2[] = {1, 3, 5, 0, 4, 12, 23};
+    bit::bitset<100> bs1;
+    bit::bitset<100> bs2;
+    for (auto e : arr1)
+    {
+        bs1.set(e);
+    }
+    for (auto e : arr2)
+    {
+        bs2.set(e);
+    }
+    samebit::thesamebit<100> tsb(bs1, bs2);
+
+    cout << tsb.is_once(1) << endl;
+    cout << tsb.is_once(4) << endl;
+    cout << tsb.is_once(3) << endl;
+    cout << tsb.is_once(9) << endl;
+}
+
+int main()
+{
+    test1();
+
+    return 0;
+}
