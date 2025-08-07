@@ -1,0 +1,29 @@
+#include <iostream>
+using namespace std;
+void Fun(int &x) { cout << "左值引用" << endl; }
+void Fun(const int &x) { cout << "const 左值引用" << endl; }
+
+void Fun(int &&x) { cout << "右值引用" << endl; }
+void Fun(const int &&x) { cout << "const 右值引用" << endl; }
+
+template <typename T>
+void PerfectForward(T &&t)
+{
+
+    Fun(forward<T>(t)); // 完美转发
+}
+
+int main()
+{
+    PerfectForward(10);
+
+    int a;
+    PerfectForward(a);
+    PerfectForward(std::move(a));
+
+    const int b = 8;
+    PerfectForward(b);
+    PerfectForward(std::move(b));
+
+    return 0;
+}
