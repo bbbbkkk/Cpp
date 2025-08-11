@@ -1,0 +1,130 @@
+#include <iostream>
+#include <memory>
+using namespace std;
+namespace bit
+{
+    template <class T>
+    class auto_ptr
+    {
+    public:
+        auto_ptr(T *ptr)
+            : _ptr(ptr)
+        {
+            cout << "auto_ptr(T * ptr)" << endl;
+        }
+        ~auto_ptr()
+        {
+            cout << "delete :" << _ptr << endl;
+            delete _ptr;
+        }
+        T *operator->()
+        {
+            return _ptr;
+        }
+        T &operator*()
+        {
+            return *_ptr;
+        }
+
+    public:
+        T *_ptr;
+    };
+    template <class T>
+    class unique_ptr
+    {
+    public:
+        unique_ptr(T *ptr)
+            : _ptr(ptr)
+        {
+            cout << "unique_ptr(T * ptr)" << endl;
+        }
+        ~unique_ptr()
+        {
+            cout << "delete :" << _ptr << endl;
+            delete _ptr;
+        }
+        T *operator->()
+        {
+            return _ptr;
+        }
+        T &operator*()
+        {
+            return *_ptr;
+        }
+        unique_ptr(unique_ptr<T> &ap) = delete;
+        unique_ptr<T> &operator=(unique_ptr<T> &ap) = delete;
+
+    public:
+        T *_ptr;
+    };
+    template <class T>
+    class shared_ptr
+    {
+    public:
+        shared_ptr(T *ptr = nullptr)
+            : _ptr(ptr), _pcount(new int(1))
+        {
+            cout << "shared_ptr(T * ptr)" << endl;
+        }
+        ~shared_ptr()
+        {
+            if (*(_pcount)-- == 0)
+            {
+                cout << "delete :" << _ptr << endl;
+                delete _ptr;
+                delete _pcount;
+            }
+        }
+        T *operator->()
+        {
+            return _ptr;
+        }
+        T &operator*()
+        {
+            return *_ptr;
+        }
+        shared_ptr(const shared_ptr<T> &sp)
+        {
+            _ptr = sp._ptr;
+            _pcount = sp._pcount;
+            (*_pcount)++;
+        }
+        // sp1=sp2
+        shared_ptr<T> operator=(shared_ptr<T> &sp)
+        {
+            // sp1=sp1情况
+            if (_ptr == sp._ptr)
+            {
+                return *this;
+            }
+            // 第一步：处理 sp1 原来持有的资源
+            if (*(_pcount)-- == 0)
+            {
+                delete _ptr;
+                delete _pcount;
+            }
+            // 第二步：共享 sp2 的资源
+            _ptr = sp._ptr;
+            _pcount = sp._pcount;
+            (*_pcount)++;
+
+            return *this;
+        }
+
+    public:
+        T *_ptr;
+        int *_pcount;
+    };
+};
+
+int main()
+{
+    int *a = nullptr;
+    // bit::auto_ptr<int> ap1(a);
+    // bit::unique_ptr<int> ap2(a);
+    // bit::unique_ptr<int> ap3(ap2);
+    unique_ptr<int> ap4(a);
+    // unique_ptr<int> ap5(ap4);
+    bit::shared_ptr<int> sp(a);
+
+    return 0;
