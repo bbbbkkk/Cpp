@@ -12,6 +12,16 @@ void binary_read(string &s1)
     ifstream ifs("_file.txt", ios::out | ios::binary);
     ifs.read((char *)&s1, sizeof(s1) / sizeof(char));
 }
+void text_write(const string &s1)
+{
+    ofstream ofs("_file.txt1");
+    ofs << s1;
+}
+void text_read(string &s1)
+{
+    ifstream ifs("_file.txt1");
+    ifs >> s1;
+}
 
 int main()
 {
@@ -20,6 +30,10 @@ int main()
     string out;
     binary_read(out);
     cout << out << endl;
+    text_write(str);
+    string out1;
+    text_read(out1);
+    cout << out1 << endl;
 
     return 0;
 }
