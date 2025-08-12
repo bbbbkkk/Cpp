@@ -1,0 +1,25 @@
+#include <fstream>
+#include <iostream>
+#include <string>
+using namespace std;
+void binary_write(const string &s1)
+{
+    ofstream ofs("_file.txt", ios::in | ios::binary);
+    ofs.write((const char *)&s1, sizeof(s1) / sizeof(char));
+}
+void binary_read(string &s1)
+{
+    ifstream ifs("_file.txt", ios::out | ios::binary);
+    ifs.read((char *)&s1, sizeof(s1) / sizeof(char));
+}
+
+int main()
+{
+    string str = "中国起飞111111111";
+    binary_write(str);
+    string out;
+    binary_read(out);
+    cout << out << endl;
+
+    return 0;
+}
